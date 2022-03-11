@@ -3,32 +3,28 @@ from tkinter.ttk import Combobox, Notebook
 from tkinter import filedialog as fd
 import csv
 
-file_name = ""  # file_name je globalna promenljiva i bitno je da bih znala ime fajla iz razloga sto ce biti otovren vise puta
-
-# place() omogucava koriscenje x i y koordinata ; pack() redja elemente jedan do drugog s leva na desno ; grid() je formatiranje prema redovima i kolonama
+file_name = ""
 
 def filter_data():
-    # pass    #ovo znaci ignorisi ovu funkciju za sada
-    letter_value = letters_combobox_var.get()  # Uzimamo vrednost iz combobox-a(padajuci meni), tip podatka je string
-    date_value = date_entry.get()  # za combobx treba nam dodatna promenljiva koja uzima vrednost iz pafajuceg menija, pa tek onda koristimo metodu get(). Za entry mozemo direktno uzeti vrednost metodom get()
-    records_counter = 0  # prikazuje koliko smo pronasli filtriranih redova u fajlu
-    data_listbox.delete(0, END)  # ovo sluzi da pre svake filtracije obrise sve u listi, da ne pamti, kako bi prikazali nove rezultate
+    letter_value = letters_combobox_var.get()  
+    date_value = date_entry.get()
+    records_counter = 0
+    data_listbox.delete(0, END)
     with open('babies_names.csv', 'r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)  # csv_reader predstavlja "citac fajla", svaki red u citacu predstavlja Dictionary red
+        csv_reader = csv.DictReader(csv_file)
         for line in csv_reader:
-            if line['FirstForename'][0] == letter_value:  # uz pomoc if poredimo da li je pocetno slovo imena jednako slovu koje je odabrano za filtriranje, u ovom slucaju npr. proveravamo da li je D=D ("David)
+            if line['FirstForename'][0] == letter_value:
                 if line['yr'] == date_value:
                     data_listbox.insert('end', f'Date of birth : {line["yr"]}. Child name: {line["FirstForename"]}')
-                    records_counter += 1  # ovo smo dodali da bismo dali feedback korisniku koliko je rezultata pronadjeno
-    # izlazimo iz petlje:
+                    records_counter += 1
+  
     records_value_init = 'Records found: '
-    records_label.config(text=f'{records_value_init} {records_counter}')  # poenta funkcije jeste da filtrira podatke koji se nalaze u postojecem CSV fajlu, u vom primeru konkretno filtriramo imena i godinu
-    # ovo config nam da izmenimo tekst ove labele records_label tj. da obavestimo korisnika koliko imamo pronadjenih rezultata
+    records_label.config(text=f'{records_value_init} {records_counter}')
 
 
 def filter_custom_file_data():
     field_value = fields_combobox_var.get()
-    row_counter = 0  # ovo koristimo kako bismo ogranicili broj prikaza redova u fajlu
+    row_counter = 0
     data_listbox2.delete(0, END)
     number_of_rows = int(row_entry.get())
     with open(file_name, 'r') as csv_file:
@@ -50,12 +46,12 @@ def select_file():
         ('Csv files', '*.csv'),
         ('All files', '*.*')
     )
-    keys = ''  # keys su kljucevi tj. prvi red u CSV fajlu
+    keys = ''
 
     global file_name
     file_name = fd.askopenfilename(
         title='Open a file',
-        initialdir='/',  # predstavlja lokaciju odakle pocinje pretraga fajla
+        initialdir='/',
         filetypes=filetypes)
     with open(file_name, 'r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -67,7 +63,7 @@ def select_file():
 
 
 root = Tk()
-root.resizable(0, 0)  # ovim smo podesili da maximize ikonica ne radi
+root.resizable(0, 0)
 
 root.title("CSV filter")
 root.geometry("500x650")
@@ -82,17 +78,18 @@ notebook.pack(expand=1, fill="both")
 
 # -------------- FRAME ONE ---------------------
 
-# --------- widget variables ----------------
-letters_combobox_var = StringVar()  # StringVar znaci da vrednosti koje se nalaze u Combobox-u su string tipa
-# ---------  widgets -------------------
+# ---------  widget variables  ----------------
+
+letters_combobox_var = StringVar()
+
+# ---------    widgets   -------------------
 
 filter_label_frame = LabelFrame(first_frame, text="Filter Options", width=440, height=150)
 letter_label = Label(filter_label_frame, text="Pick a letter:")
 letters_combobox = Combobox(filter_label_frame, textvariable=letters_combobox_var)
-letters_combobox['values'] = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-                              'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')  # list, tuples, sets podsetiti se!
-letters_combobox.state(["readonly"])  # state nam pokazuje da li je combobox samo za citanje ili i za pisanje
-letters_combobox.set("Select letter")  # set znaci da postavljamo default vrednost za combobox, bez njega bilo bi prazno
+letters_combobox['values'] = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+letters_combobox.state(["readonly"])
+letters_combobox.set("Select letter")
 
 date_label = Label(filter_label_frame, text="Enter a date (1974 - 2020):")
 date_entry = Entry(filter_label_frame)
@@ -100,12 +97,12 @@ date_entry = Entry(filter_label_frame)
 filter_button = Button(filter_label_frame, text="FILTER", width=55, bg="lightgreen", command=filter_data)
 
 data_listbox = Listbox(first_frame, width=73, height=25)
-scroll_bar = Scrollbar(first_frame, orient=VERTICAL,
-                       command=data_listbox.yview)  # orient je orijentacija samog scrollbar-a koja nam omogucava da ga postavimo vertikalno ili horizontalno, ona ne mora da se definise jer postoji po difoltu
+scroll_bar = Scrollbar(first_frame, orient=VERTICAL, command=data_listbox.yview)
 data_listbox["yscrollcommand"] = scroll_bar.set
 records_label = Label(first_frame, text="Records found: ")
 
 # ---------- widgets placement -------------
+
 filter_label_frame.place(x=30, y=30)
 letter_label.place(x=20, y=20)
 letters_combobox.place(x=110, y=20)
@@ -113,13 +110,14 @@ date_label.place(x=20, y=50)
 date_entry.place(x=165, y=50)
 filter_button.place(x=20, y=100)
 data_listbox.place(x=30, y=190)
-scroll_bar.pack(side="right", fill="y")  # samo za pack() mozemo da koristimo fill
+scroll_bar.pack(side="right", fill="y")
 records_label.place(x=30, y=600)
+
 
 # -------------- FRAME SECOND ---------------------
 
-
 # --------- widget variables ----------------
+
 fields_combobox_var = StringVar()
 
 # ---------  widgets -------------------
@@ -138,6 +136,7 @@ row_label = Label(filter_label_frame2, text='Rows: ')
 fields_combobox.set('Select field')
 
 # ---------- widgets placement -------------
+
 select_file_button.place(x=30, y=10)
 filter_label_frame2.place(x=30, y=50)
 fields_label.place(x=20, y=20)
